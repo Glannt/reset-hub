@@ -1,0 +1,28 @@
+{
+  "id": "idm_trial_reset",
+  "name": {
+    "vi": "IDM Trial Reset Tool",
+    "en": "IDM Trial Reset Utility"
+  },
+  "description": {
+    "vi": "Tự động đóng tiến trình IDMan.exe, xóa key Registry để khôi phục 30 ngày dùng thử hoàn toàn sạch sẽ.",
+    "en": "Force close IDMan.exe and wipe Trial Registry values to restore pristine 30-day evaluation period."
+  },
+  "icon": "https://cdn-icons-png.flaticon.com/512/888/888853.png",
+  "version_check": {
+    "hive": "HKEY_CURRENT_USER",
+    "path": "Software\\DownloadManager",
+    "key": "Serial"
+  },
+  "actions": [
+    {
+      "label": {
+        "vi": "🚀 Bắt đầu Reset ngay",
+        "en": "🚀 Execute Reset Now"
+      },
+      "type": "execute_binary",
+      "file": "ResetIDM_Core.exe",
+      "require_admin": true
+    }
+  ]
+}

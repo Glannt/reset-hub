@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Reset Hub v2.0</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="/main.js" defer></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <aside>
+            <div class="brand">
+                <i class="fa-solid fa-toolbox"></i>
+                <span>RESET HUB <span class="brand-badge">AIO</span></span>
+            </div>
+            
+            <nav>
+                <div class="nav-title" data-i18n="nav_menu">Menu Chính</div>
+                <ul class="nav-list">
+                    <li class="nav-item active">
+                        <div class="nav-link">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span data-i18n="nav_dashboard">Bảng Điều Khiển</span>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="nav-link" id="btn-refresh-tools">
+                            <i class="fa-solid fa-sync fa-spin-hover"></i>
+                            <span data-i18n="nav_refresh">Quét Lại Hệ Thống</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="nav-title" style="margin-top: 2rem;" data-i18n="nav_settings">Cài Đặt</div>
+                <div class="language-picker">
+                    <button id="lang-vi" class="lang-btn active">🇻🇳 Tiếng Việt</button>
+                    <button id="lang-en" class="lang-btn">🇺🇸 English</button>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <div class="pulse"></div>
+                    <span data-i18n="status_active">Hệ thống đã sẵn sàng</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Main Content -->
+        <main>
+            <!-- Header -->
+            <header class="top-header">
+                <div>
+                    <h1 data-i18n="header_title">Hộp Công Cụ Tiện Ích</h1>
+                    <p class="subtitle" data-i18n="header_desc">Quản lý, kiểm tra phiên bản và chạy các tác vụ dọn dẹp nâng cao an toàn.</p>
+                </div>
+                <button class="btn-add-tool" id="btn-add-tool">
+                    <i class="fa-solid fa-plus"></i>
+                    <span data-i18n="btn_add">Thêm Tool Mới</span>
+                </button>
+            </header>
+
+            <!-- Tools Container Grid -->
+            <section class="dashboard-content">
+                <div id="loading-spinner" class="loading-container">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span data-i18n="msg_scanning">Đang quét các plugin hệ thống...</span>
+                </div>
+
+                <div class="tools-grid" id="tools-grid">
+                    <!-- Dynamic Cards will be injected here by main.js -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state hidden">
+                    <i class="fa-regular fa-folder-open"></i>
+                    <h3 data-i18n="msg_empty_title">Chưa Có Công Cụ Nào</h3>
+                    <p data-i18n="msg_empty_desc">Vui lòng nhấn "Thêm Tool Mới" hoặc thả thư mục tool vào thư mục `/tools` của ứng dụng.</p>
+                </div>
+            </section>
+
+            <!-- Floating toast notifications -->
+            <div id="toast-container" class="toast-container"></div>
+        </main>
+    </div>
+
+    <!-- Backdrop/Modal chi tiết Tool -->
+    <div id="tool-detail-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <div class="modal-title-area">
+                    <div class="tool-icon-container">
+                        <img id="modal-icon" src="" onerror="this.src='https://cdn-icons-png.flaticon.com/512/888/888853.png'" alt="icon">
+                    </div>
+                    <div>
+                        <h2 id="modal-tool-name">Tên công cụ</h2>
+                        <span id="modal-tool-version" class="tool-version-badge"></span>
+                    </div>
+                </div>
+                <button id="btn-close-modal" class="close-btn">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="info-section">
+                    <h4 data-i18n="modal_desc_title">Mô Tả Chi Tiết</h4>
+                    <p id="modal-tool-desc">Mô tả ở đây</p>
+                </div>
+                
+                <div class="info-section">
+                    <h4 data-i18n="modal_specs_title">Thông Số Tương Tác Hệ Thống</h4>
+                    <div class="spec-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Registry Hive</span>
+                            <code id="spec-hive" class="spec-value">N/A</code>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Tên Key (Dữ liệu)</span>
+                            <code id="spec-key" class="spec-value">N/A</code>
+                        </div>
+                        <div class="spec-item" style="grid-column: span 2;">
+                            <span class="spec-label">Đường Dẫn Registry Con (Subkey Path)</span>
+                            <code id="spec-path" class="spec-value" style="white-space: normal; word-break: break-all;">N/A</code>
+                        </div>
+                        <div class="spec-item" style="grid-column: span 2;">
+                            <span class="spec-label">Thư Mục Gốc Nằm Trong Hub</span>
+                            <span id="spec-folder" class="spec-value">N/A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h4 data-i18n="modal_actions_title">Danh Sách File Thực Thi Kích Hoạt</h4>
+                    <div id="modal-actions-list">
+                        <!-- Dòng thông tin action được JS render động -->
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <details class="raw-details">
+                        <summary data-i18n="modal_raw_json">🔑 Xem Tệp Cấu Hình Động (JSON Manifest)</summary>
+                        <pre><code id="modal-raw-code"></code></pre>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
